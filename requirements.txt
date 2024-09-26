@@ -1,4 +1,11 @@
 Flask
+<<<<<<< HEAD
 Pillow
 rembg
 gunicorn
+=======
+gunicorn
+Pillow
+rembg
+
+>>>>>>> 42ed93f7a49f4e19d238b05915a0215c7ed08167

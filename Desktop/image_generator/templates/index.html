@@ -1,0 +1,160 @@
+<!doctype html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>이미지 생성기</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            color: #333;
+            margin: 0;
+            padding: 20px;
+            text-align: center;
+        }
+
+        form {
+            background: white;
+            padding: 20px;
+            border-radius: 5px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            max-width: 400px;
+            margin: 20px auto;
+        }
+
+        #file-drop-area {
+            border: 2px dashed #ccc;
+            border-radius: 5px;
+            padding: 20px;
+            margin-bottom: 15px;
+            color: #888;
+            transition: border-color 0.3s;
+            cursor: pointer;  /* 커서 포인터 추가 */
+        }
+
+        .file-info {
+            margin-bottom: 15px;
+            color: #555;
+        }
+
+        input[type="text"],
+        select {
+            width: 100%;
+            padding: 10px;
+            margin-bottom: 15px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+        }
+
+        input[type="file"] {
+            display: none;  /* 파일 입력 필드를 숨김 */
+        }
+
+        button {
+            background: #28a745;
+            color: white;
+            border: none;
+            padding: 10px;
+            border-radius: 5px;
+            cursor: pointer;
+            width: 100%;
+            font-size: 16px;
+        }
+
+        button:hover {
+            background: #218838;
+        }
+
+        .download-button {
+            display: inline-block;
+            margin: 10px 0;
+            text-align: center;
+            background: #007bff;
+            color: white;
+            padding: 10px 15px;
+            border-radius: 5px;
+            text-decoration: none;
+            border: 2px solid black; /* 테두리 추가 */
+            width: auto; /* 자동 너비 설정 */
+        }
+
+        .download-button:hover {
+            background: #0056b3;
+        }
+
+        h2 {
+            margin-top: 20px;
+            color: #333;
+        }
+
+        img {
+            display: block;
+            margin: 20px auto;
+            max-width: 100%;
+        }
+    </style>
+</head>
+<body>
+    <h1><i class="fa fa-image"></i> 이미지 생성기</h1>
+    <form method="post" enctype="multipart/form-data" id="upload-form">
+        <label for="custom_text">이미지에 추가할 텍스트:</label>
+        <input type="text" id="custom_text" name="custom_text" required>
+
+        <div id="file-drop-area">
+            드래그 앤 드롭으로 이미지를 업로드하세요.
+        </div>
+        <div class="file-info" id="file-info">파일이 선택되지 않았습니다.</div>
+        <input type="file" id="image_file" name="image_file" accept="image/*" required>
+
+        <button type="submit"><i class="fa fa-plus"></i> 이미지 생성</button>
+    </form>
+
+    {% if num_images is defined %}
+        <div class="download-button">
+            <a href="{{ url_for('serve_static', filename='combined_image_' + num_images|string + '.png') }}" download>이미지 다운로드</a>
+        </div>
+        <h2>{{ num_images }}개의 이미지가 생성되었습니다.</h2>
+        <img src="{{ url_for('serve_static', filename='combined_image_' + num_images|string + '.png') }}" alt="Generated Image">
+        <p>입력한 텍스트: {{ custom_text }}</p>
+    {% endif %}
+
+    <script>
+        const fileDropArea = document.getElementById('file-drop-area');
+        const fileInput = document.getElementById('image_file');
+        const fileInfo = document.getElementById('file-info');
+
+         // 드래그 및 드롭 이벤트 처리
+         fileDropArea.addEventListener('dragover', (event) => {
+            event.preventDefault();
+            fileDropArea.style.borderColor = '#333'; // 드래그 중 테두리 색상 변화
+        });
+
+        fileDropArea.addEventListener('dragleave', () => {
+            fileDropArea.style.borderColor = '#ccc'; // 드래그 아웃 시 테두리 색상 복원
+        });
+
+        fileDropArea.addEventListener('drop', (event) => {
+            event.preventDefault();
+            fileDropArea.style.borderColor = '#ccc'; // 드롭 후 테두리 색상 복원
+
+            if (event.dataTransfer.files.length) {
+                fileInput.files = event.dataTransfer.files; // 드롭된 파일을 input에 추가
+                fileInfo.textContent = `선택된 파일: ${event.dataTransfer.files[0].name}`; // 선택된 파일 이름 표시
+            }
+        });
+
+        fileDropArea.addEventListener('click', () => {
+            fileInput.click(); // 드롭 영역 클릭 시 파일 선택 창 열기
+        });
+
+        fileInput.addEventListener('change', () => {
+            if (fileInput.files.length) {
+                fileInfo.textContent = `선택된 파일: ${fileInput.files[0].name}`; // 선택된 파일 이름 표시
+            }
+        });
+    </script>
+</body>
+</html>
+
